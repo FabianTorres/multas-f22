@@ -1,6 +1,6 @@
 // Archivo: src/features/giros_rectificatoria/logic/calculadoraGiros.ts
 
-import type { DatosIngresoGiros, ResultadoGiros, ChequeDevolucion } from './tiposGiros';
+import type { DatosIngresoGiros, ResultadoGiros } from './tiposGiros';
 import { IPC } from '../../renta/logic/calculadoraF22';
 import { REGLAS_SII } from '../../../config/constantes';
 import { TABLA_TASAS_DIARIAS } from '../../../config/tasasInteres';
@@ -25,6 +25,38 @@ function calcularMesesMulta(fechaInicio: Date, fechaFin: Date): number {
     return Math.max(0, meses);
 }
 
+/**
+ * Deflacta el monto de un cheque a la moneda de Diciembre del Año Tributario Anterior (AT-1).
+ * Aplica las reglas exactas de truncamiento a 4 decimales y redondeo a 3 decimales.
+ */
+function deflactarCheque(montoCheque: number, fechaEmision: Date, anioTributario: number): number {
+    // Pi = Índice IPC de Noviembre del AT-1
+    // En JS, los meses van de 0 a 11 (Noviembre es 10)
+    const fechaPi = new Date(anioTributario - 1, 10, 1);
+    const Pi = IPC(fechaPi);
+
+    // Pf = Índice IPC del mes inmediatamente anterior al cheque (Desfase de 1 mes)
+    const fechaPf = new Date(fechaEmision.getFullYear(), fechaEmision.getMonth() - 1, 1);
+    const Pf = IPC(fechaPf);
+
+    // Si Pf no es mayor a Pi (no hubo inflación o es negativo), el valor se mantiene intacto.
+    if (Pf <= Pi || Pi === 0) {
+        return montoCheque;
+    }
+
+    // REGLAS SII DE REDONDEO ESTRICTO:
+    const factorCrudo = Pf / Pi;
+
+    // 1. Truncar a 4 decimales
+    const factorTruncado = Math.trunc(factorCrudo * 10000) / 10000;
+
+    // 2. Redondear a 3 decimales
+    const factorRedondeado = Math.round(factorTruncado * 1000) / 1000;
+
+    // 3. Monto final redondeado a 0 decimales
+    return Math.round(montoCheque / factorRedondeado);
+}
+
 function calcularInteresDiario(fechaInicio: Date, fechaFin: Date, baseParaInteres: number): number {
     let sumaTasas = 0;
     // El interés empieza a correr desde el día siguiente
@@ -32,7 +64,11 @@ function calcularInteresDiario(fechaInicio: Date, fechaFin: Date, baseParaIntere
     fechaActual.setDate(fechaActual.getDate() + 1);
 
     while (fechaActual <= fechaFin) {
-        const fechaStr = fechaActual.toISOString().split('T')[0];
+        const dia = String(fechaActual.getDate()).padStart(2, '0');
+        const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+        const anio = fechaActual.getFullYear();
+        const fechaStr = `${dia}-${mes}-${anio}`;
+
         const tasaDelDia = TABLA_TASAS_DIARIAS[fechaStr];
 
         if (tasaDelDia) {
@@ -106,10 +142,20 @@ export function calcularGiros(datos: DatosIngresoGiros): ResultadoGiros {
         const tipoMultaAplicada = evidCod.trim().toUpperCase().startsWith('I') ? 'DURA' : 'BLANDA';
 
         cheques.forEach(cheque => {
+            // 1. DEFLACTAR A DICIEMBRE AT-1
+            const montoDeflactado = deflactarCheque(cheque.montoCobrado, cheque.fechaEmision, REGLAS_SII.ANIO_TRIBUTARIO);
+
+            // El total de capital base acumulado ahora usa el monto deflactado
+            totalCapital += montoDeflactado;
+
+            // 2. Inflar/Reajustar el cheque hasta la fecha actual
+            // (Aquí mantenemos tu lógica anterior de IPC MESAANT para calcular el código [92])
             const ipcCheque = IPC(MESAANT(cheque.fechaEmision));
             const ipcActual = IPC(MESAANT(fechaRectificatoria));
-            const reajusteCheque = Math.round(cheque.montoCobrado * Math.max(0, (ipcActual - ipcCheque) / ipcCheque));
-            const baseRecargos = cheque.montoCobrado + reajusteCheque;
+            const factorReajusteCheque = Math.max(0, (ipcActual - ipcCheque) / ipcCheque);
+
+            const reajusteCheque = Math.round(montoDeflactado * factorReajusteCheque); // <- ¡Ojo! El reajuste ahora se calcula sobre el deflactado
+            const baseRecargos = montoDeflactado + reajusteCheque;
 
             const mesesAtraso = calcularMesesMulta(cheque.fechaEmision, fechaRectificatoria);
             let porcentajeMulta = tipoMultaAplicada === 'DURA'

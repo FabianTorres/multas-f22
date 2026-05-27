@@ -21,7 +21,7 @@ export function VistaResultadosGiros({ resultado, onVolver }: Props) {
                     Resultado de Rectificatoria
                 </h2>
                 <span className="bg-green-900 text-green-300 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
-                    Módulo QA
+                    Giros
                 </span>
             </div>
 
@@ -29,7 +29,7 @@ export function VistaResultadosGiros({ resultado, onVolver }: Props) {
                 <div className="bg-gray-800 p-8 rounded-lg text-center border border-gray-700">
                     <h3 className="text-xl font-bold text-gray-300 mb-2">No se generaron Giros</h3>
                     <p className="text-gray-500">
-                        La rectificatoria no generó diferencias de impuestos a pagar ni reintegros a favor del Fisco.
+                        La rectificatoria no generó diferencias de impuestos a pagar ni reintegros.
                     </p>
                 </div>
             )}
@@ -45,7 +45,7 @@ export function VistaResultadosGiros({ resultado, onVolver }: Props) {
                         </div>
                         <ul className="p-4 space-y-3 font-mono text-sm">
                             <li className="flex justify-between">
-                                <span className="text-gray-400">[91] Capital Adeudado:</span>
+                                <span className="text-gray-400">[91] Pago:</span>
                                 <span className="text-white">{formatearDinero(resultado.giro295.capital91)}</span>
                             </li>
                             <li className="flex justify-between">
@@ -77,7 +77,7 @@ export function VistaResultadosGiros({ resultado, onVolver }: Props) {
                         </div>
                         <ul className="p-4 space-y-3 font-mono text-sm">
                             <li className="flex justify-between">
-                                <span className="text-gray-400">[91] Capital Devuelto:</span>
+                                <span className="text-gray-400">[91] Pago:</span>
                                 <span className="text-white">{formatearDinero(resultado.giro291.capital91)}</span>
                             </li>
                             <li className="flex justify-between">
@@ -118,17 +118,17 @@ export function VistaResultadosGiros({ resultado, onVolver }: Props) {
             {(!sinGiros) && (
                 <div className="mt-8 bg-gray-800 p-6 rounded-lg border border-gray-700 font-mono text-sm">
                     <h3 className="text-yellow-500 font-bold uppercase tracking-widest border-b border-gray-600 pb-2 mb-4">
-                        Variables de Motor (Auditoría QA)
+                        Variables de Motor
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
                         {/* Variables de Diferencia [295] */}
                         {resultado.generaGiro295 && resultado.giro295 ? (
                             <div>
-                                <h4 className="text-blue-400 font-bold mb-2 uppercase text-xs">Parámetros Giro [295]</h4>
+                                <h4 className="text-blue-400 font-bold mb-2 uppercase text-xs">Detalle Giro [295]</h4>
                                 <ul className="space-y-1">
                                     <li className="flex justify-between text-gray-400 border-b border-gray-700 pb-1">
-                                        <span>Base Capital Inicial:</span>
+                                        <span>Base:</span>
                                         <span className="text-white">{resultado.giro295.diferenciaCalculada}</span>
                                     </li>
                                     <li className="flex justify-between text-gray-400 border-b border-gray-700 py-1">
@@ -146,18 +146,22 @@ export function VistaResultadosGiros({ resultado, onVolver }: Props) {
                         {/* Variables de Reintegro [291] */}
                         {resultado.generaGiro291 && resultado.giro291 ? (
                             <div>
-                                <h4 className="text-red-400 font-bold mb-2 uppercase text-xs">Parámetros Giro [291]</h4>
+                                <h4 className="text-red-400 font-bold mb-2 uppercase text-xs">Detalle Giro [291]</h4>
                                 <ul className="space-y-1">
                                     <li className="flex justify-between text-gray-400 border-b border-gray-700 pb-1">
                                         <span>Tipo de Multa Aplicada:</span>
                                         <span className="text-white font-bold">{resultado.giro291.tipoMultaAplicada}</span>
                                     </li>
                                     <li className="flex justify-between text-gray-400 border-b border-gray-700 py-1">
+                                        <span>Suma Deflactada Cheques:</span>
+                                        <span className="text-white">{formatearDinero(resultado.giro291.montoDeflactadoTotal)}</span>
+                                    </li>
+                                    <li className="flex justify-between text-gray-400 border-b border-gray-700 py-1">
                                         <span>Meses Castigo (Cheque 1):</span>
                                         <span className="text-white">{resultado.giro291.mesesAtrasoMulta}</span>
                                     </li>
                                     <li className="flex justify-between text-gray-400 border-b border-gray-700 py-1">
-                                        <span>Factor Código [60]:</span>
+                                        <span>Código [60] (%):</span>
                                         <span className="text-white">{resultado.giro291.porcentajeCondonacion60}%</span>
                                     </li>
                                     <li className="flex justify-between text-gray-400 pt-1">

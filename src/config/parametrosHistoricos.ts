@@ -7,6 +7,8 @@ export interface ParametrosMes {
 
 // El formato de la llave será "YYYY-MM" (Año y Mes)
 export const VALORES_HISTORICOS: Record<string, ParametrosMes> = {
+    "2025-11": { ipc: 109.47, utm: 69542 },
+    "2025-12": { ipc: 109.26, utm: 69542 },
     "2026-01": { ipc: 109.71, utm: 69751 },
     "2026-02": { ipc: 109.70, utm: 69611 },
     "2026-03": { ipc: 110.75, utm: 69889 },
