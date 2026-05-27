@@ -8,11 +8,13 @@ interface Props {
 }
 
 export function FormularioIngreso({ onCalcular, onVolver }: Props) {
+
+    const fechaHoy = new Date().toISOString().split('T')[0];
     const [tcvig, setTcvig] = useState<string>('1');
-    const [codigo305, setCodigo305] = useState<string>('33739367');
+    const [codigo305, setCodigo305] = useState<string>('0');
     const [vector644, setVector644] = useState<string>('0');
     const [fechaVencimiento, setFechaVencimiento] = useState<string>('2026-04-30'); // Ajustado a fin de mes por defecto
-    const [fechaPago, setFechaPago] = useState<string>('2026-04-30'); // [315] Fecha de presentación
+    const [fechaPago, setFechaPago] = useState<string>(fechaHoy); // [315] Fecha de presentación
     const [esDolares, setEsDolares] = useState<string>('false');
 
     const manejarEnvio = (e: React.FormEvent) => {
@@ -59,7 +61,7 @@ export function FormularioIngreso({ onCalcular, onVolver }: Props) {
                     </div>
 
                     <div className="col-span-2 sm:col-span-1">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Código [305] - Base</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Código [305]</label>
                         <input
                             type="number"
                             className="w-full px-3 py-2 border border-gray-300 rounded-md"

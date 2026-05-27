@@ -102,13 +102,13 @@ export function evaluarObligacionNOD(datos: DatosFiltroNOD): ResultadoNOD {
     if (ecuacionMaestra === 0) {
         return {
             obligadoADeclarar: false,
-            mensaje: "Contribuyente No Obligado a Declarar (Matriz NOD = 0).",
+            mensaje: "Contribuyente No Obligado a Declarar",
             auditoria: paqueteAuditoria
         };
     } else {
         return {
             obligadoADeclarar: true,
-            mensaje: `Obligado a declarar. Ecuación Maestra arrojó valor > 0.`,
+            mensaje: `Obligado a declarar`,
             auditoria: paqueteAuditoria
         };
     }

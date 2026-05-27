@@ -1,7 +1,7 @@
 // Archivo: src/components/MatrizNOD.tsx
 import { useState } from 'react';
 import type { DatosFiltroNOD } from '../logic/evaluadorNOD';
-import { REGLAS_SII } from '../config/constantes';
+import { REGLAS_SII } from '../../../config/constantes';
 
 // Omitimos los datos que ya vienen del filtro previo y el P01
 type CamposMatriz = Omit<DatosFiltroNOD, 'codigo87' | 'codigo91' | 'tipo03' | 'vx010042' | 'P01'>;
@@ -39,7 +39,7 @@ export function MatrizNOD({ datosFiltro, onEvaluarMatriz, onVolver }: Props) {
     };
 
     // Función auxiliar para renderizar inputs rápido
-    const renderInput = (codigo: keyof CamposMatriz, label: string) => (
+    const renderInput = (codigo: keyof CamposMatriz, label: string, permiteNegativos: boolean = false) => (
         <div key={codigo} className="flex flex-col">
             <label className="text-xs font-bold text-gray-600 mb-1">[{label}]</label>
             <input
@@ -48,7 +48,7 @@ export function MatrizNOD({ datosFiltro, onEvaluarMatriz, onVolver }: Props) {
                 value={campos[codigo]}
                 onChange={manejarCambio}
                 className="px-2 py-1 border border-gray-300 rounded focus:ring-indigo-500 text-sm"
-                min="0"
+                min={permiteNegativos ? undefined : "0"}
             />
         </div>
     );
@@ -57,7 +57,7 @@ export function MatrizNOD({ datosFiltro, onEvaluarMatriz, onVolver }: Props) {
         <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg border-t-4 border-indigo-600">
             <h2 className="text-2xl font-bold mb-2 text-gray-800">Fase 2: Matriz de Evaluación NOD</h2>
             <p className="text-gray-600 mb-6 text-sm">
-                Complete los códigos para evaluar la Ecuación Maestra. Deje en 0 los que no apliquen.
+                Complete los códigos para evaluar los NOD. Deje en 0 los que no apliquen.
             </p>
 
             <form onSubmit={enviarEvaluacion} className="space-y-6">
@@ -71,7 +71,7 @@ export function MatrizNOD({ datosFiltro, onEvaluarMatriz, onVolver }: Props) {
                         {renderInput('codigo159', '159')}
                         {renderInput('codigo751', '751')}
                         {renderInput('codigo766', '766')}
-                        {renderInput('codigo304', '304')}
+                        {renderInput('codigo304', '304', true)}
                     </div>
                 </div>
 
@@ -117,7 +117,7 @@ export function MatrizNOD({ datosFiltro, onEvaluarMatriz, onVolver }: Props) {
                         type="submit"
                         className="w-full bg-indigo-600 text-white font-bold py-3 rounded hover:bg-indigo-700 transition"
                     >
-                        Ejecutar Ecuación Maestra NOD
+                        Ejecutar NOD
                     </button>
                     <button
                         type="button"

@@ -1,7 +1,7 @@
 // Archivo: src/logic/calculadoraF22.ts
-import { REGLAS_SII } from '../config/constantes';
-import { TABLA_TASAS_DIARIAS } from '../config/tasasInteres';
-import { VALORES_HISTORICOS } from '../config/parametrosHistoricos';
+import { REGLAS_SII } from '../../../config/constantes';
+import { TABLA_TASAS_DIARIAS } from '../../../config/tasasInteres';
+import { VALORES_HISTORICOS } from '../../../config/parametrosHistoricos';
 
 export interface DatosIngresoF22 {
     codigo305: number;
@@ -17,7 +17,7 @@ export interface ResultadoF22 {
     codigo60: number; codigo795: number; codigo94: number;
     mesesAtraso: number; sumaInteresDiario: number; porcentajeCondonacion: number;
     auditoria: {
-        constantes: { p: number; a: number; b: number; d: number; phi: number };
+        constantes: { p: number; a: number; b: number; d: number; phi: number; d_multa: number; d_intereses: number };
         tiempo: { ipcMesAnterior: number; ipcFebrero: number; reaj: number; utm: number };
         factores: { cmul: number; cintBase: number; cintSpread: number; multaMinima: number };
         sumatorias: { intBase: number; intSpread: number };
@@ -70,7 +70,7 @@ function MESAANT(fechaX: Date): Date {
 }
 
 // IPC{X}
-function IPC(fecha: Date): number {
+export function IPC(fecha: Date): number {
     const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const año = fecha.getFullYear();
     const clave = `${año}-${mes}`;
@@ -85,7 +85,7 @@ function IPC(fecha: Date): number {
 }
 
 // UTM{X} (Queda lista para cuando la usemos en los NOD)
-function UTM(fecha: Date): number {
+export function UTM(fecha: Date): number {
     const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const año = fecha.getFullYear();
     const clave = `${año}-${mes}`;
@@ -258,13 +258,15 @@ export function calcularF22(datos: DatosIngresoF22): ResultadoF22 {
     const ipcMesAnterior = IPC(MESAANT(vPago));
     const ipcFebrero = IPC(new Date(anioTributario, 1, 1));
     const utmAplicada = UTM(vPago);
+    const d_multa = sumandoMultaD;
+    const d_intereses = sumandoIntBaseD + sumandoIntSpreadD;
 
     return {
         codigo305: datos.codigo305, codigo91, codigo92, codigo93, codigo60, codigo795, codigo94,
         mesesAtraso, sumaInteresDiario: sum_int_base + sum_int_spread, porcentajeCondonacion: CMUL,
         // EMPAQUETADO DE AUDITORÍA PARA QA
         auditoria: {
-            constantes: { p, a, b, d, phi },
+            constantes: { p, a, b, d, phi, d_multa, d_intereses },
             tiempo: { ipcMesAnterior, ipcFebrero, reaj: REAJ(vPago), utm: utmAplicada },
             factores: { cmul: CMUL, cintBase: CINT_base, cintSpread: CINT_spread, multaMinima: factorMulta },
             sumatorias: { intBase: sum_int_base, intSpread: sum_int_spread }

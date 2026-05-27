@@ -102,9 +102,17 @@ export function VistaResultados({ resultado, resultadoNOD, onVolver }: Props) {
                                 <span className="text-gray-400">[ b ] (Reajuste):</span>
                                 <span className="text-white">{au.constantes.b.toFixed(2)}</span>
                             </li>
-                            <li className="flex justify-between">
-                                <span className="text-gray-400">[ d ] (Multas e Int.):</span>
-                                <span className="text-white">{au.constantes.d}</span>
+                            <li className="flex justify-between mt-2">
+                                <span className="text-gray-300 font-semibold">[ d ] (Total Multas e Int.):</span>
+                                <span className="text-white font-semibold">{au.constantes.d}</span>
+                            </li>
+                            <li className="flex justify-between pl-4 border-l-2 border-gray-700 ml-1">
+                                <span className="text-gray-500 text-xs">&#x21B3; Subtotal Multa:</span>
+                                <span className="text-gray-400 text-xs">{au.constantes.d_multa}</span>
+                            </li>
+                            <li className="flex justify-between pl-4 border-l-2 border-gray-700 ml-1 mb-2">
+                                <span className="text-gray-500 text-xs">&#x21B3; Subtotal Intereses:</span>
+                                <span className="text-gray-400 text-xs">{au.constantes.d_intereses}</span>
                             </li>
                             <li className="flex justify-between pt-2 border-t border-gray-600">
                                 <span className="text-blue-400 font-bold">[ φ ] (Phi - Condonado):</span>
@@ -114,7 +122,7 @@ export function VistaResultados({ resultado, resultadoNOD, onVolver }: Props) {
                         {/* --- NUEVO BLOQUE: MATRIZ NOD --- */}
                         {resultadoNOD && resultadoNOD.auditoria && (
                             <div className="bg-gray-800 p-3 rounded border border-gray-700">
-                                <h4 className="text-purple-400 border-b border-gray-600 mb-2 uppercase font-bold">4. Matriz NOD (Pág 1-2)</h4>
+                                <h4 className="text-purple-400 border-b border-gray-600 mb-2 uppercase font-bold">Matriz NOD</h4>
                                 <ul className="space-y-1 text-sm">
                                     <li className="flex justify-between">
                                         <span className="text-gray-400">[NOD1]:</span> <span className="text-white">{resultadoNOD.auditoria.NOD1}</span>
@@ -132,12 +140,12 @@ export function VistaResultados({ resultado, resultadoNOD, onVolver }: Props) {
                                         <span className="text-gray-400">[NOD7]:</span> <span className="text-white">{resultadoNOD.auditoria.NOD7}</span>
                                     </li>
                                     <li className="flex justify-between pt-2 mt-1 border-t border-gray-600">
-                                        <span className="text-purple-300 font-bold">Ecuación Maestra:</span>
+                                        <span className="text-purple-300 font-bold">Ecuación NOD:</span>
                                         <span className="text-purple-300 font-bold">{resultadoNOD.auditoria.ecuacionMaestra}</span>
                                     </li>
                                 </ul>
                                 <div className={`mt-3 p-2 rounded text-center text-[10px] uppercase font-bold tracking-wider ${resultadoNOD.obligadoADeclarar ? 'bg-red-900/50 text-red-300' : 'bg-green-900/50 text-green-300'}`}>
-                                    {resultadoNOD.obligadoADeclarar ? "Status: Obligado a Declarar" : "Status: Eximido de Declarar"}
+                                    {resultadoNOD.obligadoADeclarar ? "Status: Obligado a Declarar" : "Status: No Obligado a Declarar"}
                                 </div>
                             </div>
                         )}
